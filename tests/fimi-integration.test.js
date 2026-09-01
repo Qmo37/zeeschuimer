@@ -49,6 +49,39 @@ describe('FIMI external export bridge', () => {
         db = null;
     });
 
+    test('installs the external listener with real background-page defaults', async () => {
+        const listeners = [];
+        const browserObject = {
+            storage: { local: storageArea({ 'zs-enabled-threads.net': '1' }) },
+            runtime: {
+                getManifest: () => ({ version: '1.14.2.3' }),
+                onMessageExternal: {
+                    addListener(listener) { listeners.push(listener); },
+                },
+            },
+            tabs: { get: async () => ({ url: 'https://www.threads.com/@alice' }) },
+            downloads: {
+                onChanged: { addListener() {}, removeListener() {} },
+                async search() { return []; },
+            },
+        };
+
+        const bridge = Integration.install({ browserObject, db });
+
+        expect(bridge).toBeDefined();
+        expect(listeners).toHaveLength(1);
+        await expect(listeners[0]({
+            type: Integration.MESSAGE_TYPE.HELLO,
+            protocolVersion: Integration.PROTOCOL_VERSION,
+        }, { id: Integration.WORKBENCH_EXTENSION_ID })).resolves.toEqual({
+            accepted: true,
+            bridgeVersion: Integration.PROTOCOL_VERSION,
+            captureEnabled: true,
+            extensionVersion: '1.14.2.3',
+            platform: Integration.THREADS_MODULE_ID,
+        });
+    });
+
     test('validates sender, protocol, job identity, platform, and terminal state', () => {
         const sender = { id: Integration.WORKBENCH_EXTENSION_ID };
         expect(Integration.validateMessage({
@@ -98,7 +131,7 @@ describe('FIMI external export bridge', () => {
         const blobs = [];
         const browserObject = {
             storage: { local: storage },
-            runtime: { getManifest: () => ({ version: '1.14.2.2' }) },
+            runtime: { getManifest: () => ({ version: '1.14.2.3' }) },
             tabs: { get: async (id) => ({ id, url: 'https://www.threads.com/@alice' }) },
             downloads: {
                 async download(options) { downloads.push(options); return 9; },

@@ -1,11 +1,11 @@
 (function attachFimiIntegration(root, factory) {
-    const api = factory();
+    const api = factory(root);
     if (typeof module === "object" && module.exports) {
         module.exports = api;
     } else {
         root.ZeeschuimerFimiIntegration = api;
     }
-})(typeof globalThis !== "undefined" ? globalThis : this, function makeFimiIntegration() {
+})(typeof globalThis !== "undefined" ? globalThis : this, function makeFimiIntegration(root) {
     "use strict";
 
     const PROTOCOL_VERSION = "1.0";

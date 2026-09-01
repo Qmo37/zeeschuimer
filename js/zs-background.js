@@ -409,7 +409,7 @@ window.zeeschuimer = {
 // the sender extension ID, job ID, Threads tab, platform, and terminal state;
 // arbitrary extensions cannot choose a filesystem path or read the database.
 if (globalThis.ZeeschuimerFimiIntegration) {
-    globalThis.ZeeschuimerFimiIntegration.install({
+    globalThis.ZeeschuimerFimiBridge = globalThis.ZeeschuimerFimiIntegration.install({
         browserObject: browser,
         db: window.db,
     });
