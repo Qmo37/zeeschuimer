@@ -328,7 +328,12 @@ window.zeeschuimer = {
                         if (action === "update") {
                             // Replace the stored data with the incoming item, keeping the original timestamp_collected.
                             await db.items.update(target_item.id, {
-                                "nav_index": target_item.nav_index,
+                                // The row now represents the latest observed
+                                // response. Keep original collection time, but
+                                // attribute this update to the current tab/nav
+                                // so job-scoped exports do not lose duplicates
+                                // first seen before the job began.
+                                "nav_index": nav_index,
                                 "item_id": item_id,
                                 "timestamp_collected": target_item.timestamp_collected || Date.now(),
                                 "last_updated": Date.now(),
@@ -346,7 +351,7 @@ window.zeeschuimer = {
                             const merged_data = Object.assign({}, target_item.data || {}, item);
 
                             await db.items.update(target_item.id, {
-                                "nav_index": target_item.nav_index,
+                                "nav_index": nav_index,
                                 "item_id": item_id,
                                 "timestamp_collected": target_item.timestamp_collected || Date.now(),
                                 "last_updated": Date.now(),
@@ -398,6 +403,16 @@ window.zeeschuimer = {
 
         await db.nav.where({"session": this.session, "tab_id": tabId}).modify({"index": nav["index"] + 1});
     }
+};
+
+// Optional, narrowly scoped local integration. The bridge itself validates
+// the sender extension ID, job ID, Threads tab, platform, and terminal state;
+// arbitrary extensions cannot choose a filesystem path or read the database.
+if (globalThis.ZeeschuimerFimiIntegration) {
+    globalThis.ZeeschuimerFimiIntegration.install({
+        browserObject: browser,
+        db: window.db,
+    });
 }
 
 zeeschuimer.init();

@@ -1,5 +1,17 @@
 # 🏴‍☠️ Zeeschuimer
 
+> **FIMI integration fork.** This branch adds a local, job-scoped export bridge
+> for the Threads Capture Workbench. It is not an official DMI release. The
+> bridge accepts messages only from the fixed Workbench extension ID, limits
+> export to one Threads tab and capture time window, and always writes beneath
+> `Downloads/threads-capture/<jobId>/zeeschuimer/`. If the bridge is absent or
+> fails, Workbench retains the original manual-export checklist.
+>
+> Run `scripts/check-upstream.sh` for an immediate comparison with the official
+> repository. A daily GitHub workflow opens one tracking issue when upstream
+> commits are pending; it never auto-merges, auto-publishes, or changes the
+> installed extension.
+
 [![DOI: 10.5281/zenodo.4742622](https://zenodo.org/badge/DOI/10.5281/zenodo.6826877.svg)](https://doi.org/10.5281/zenodo.6826877)
 [![License: MPL 2.0](https://img.shields.io/badge/license-MPL--2.0-informational)](https://github.com/digitalmethodsinitiative/4cat/blob/master/LICENSE)
 

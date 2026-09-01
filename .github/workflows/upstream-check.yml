@@ -1,0 +1,41 @@
+name: Check Zeeschuimer upstream
+
+on:
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fetch official upstream
+        run: |
+          git remote add upstream https://github.com/digitalmethodsinitiative/zeeschuimer.git
+          git fetch upstream --prune
+      - name: Compare and notify without merging
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          behind="$(git rev-list --count HEAD..upstream/master)"
+          if [ "$behind" -eq 0 ]; then
+            echo "No upstream commits are pending."
+            exit 0
+          fi
+          upstream_sha="$(git rev-parse upstream/master)"
+          title="[automation] Official Zeeschuimer updates available"
+          existing="$(gh issue list --state open --search "$title in:title" --json number --jq '.[0].number // empty')"
+          if [ -n "$existing" ]; then
+            echo "Issue #$existing already tracks pending upstream changes."
+            exit 0
+          fi
+          body="The daily check found **$behind** official upstream commit(s) not present in this fork.\n\nOfficial upstream head: \`$upstream_sha\`\n\nReview the diff and run the bridge test suite before merging. This workflow deliberately does not auto-merge or publish an extension."
+          gh issue create --title "$title" --body "$body"
