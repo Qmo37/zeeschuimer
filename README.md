@@ -2,7 +2,8 @@
 
 > **FIMI integration fork.** This branch adds a local, job-scoped export bridge
 > for the Threads Capture Workbench. It is not an official DMI release. The
-> bridge accepts messages only from the fixed Workbench extension ID, limits
+> bridge validates every `runtime.onMessageExternal` sender against the fixed
+> Workbench extension ID, limits
 > export to one Threads tab and capture time window, and always writes beneath
 > `Downloads/threads-capture/<jobId>/zeeschuimer/`. If the bridge is absent or
 > fails, Workbench retains the original manual-export checklist.

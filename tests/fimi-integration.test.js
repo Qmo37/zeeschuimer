@@ -98,7 +98,7 @@ describe('FIMI external export bridge', () => {
         const blobs = [];
         const browserObject = {
             storage: { local: storage },
-            runtime: { getManifest: () => ({ version: '1.14.2.1' }) },
+            runtime: { getManifest: () => ({ version: '1.14.2.2' }) },
             tabs: { get: async (id) => ({ id, url: 'https://www.threads.com/@alice' }) },
             downloads: {
                 async download(options) { downloads.push(options); return 9; },
